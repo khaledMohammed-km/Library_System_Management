@@ -25,5 +25,12 @@ class UserController extends Controller
         $usersRef->push($newUser);
         return redirect()->route('photos.manage_users')->with('success', 'User added successfully!');
     }
-    
+    public function showRegistrationForm()
+    {
+        return view('users.registration');
+    }
+    public function showEditForm()
+    {
+        return view('users.edit');
+    }
 }

@@ -32,6 +32,9 @@
                         <div class="d-grid">
                             <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Login</button>
                         </div>
+                        <div class="d-grid">
+                            <a class="btn btn-primary btn-login text-uppercase fw-bold" type="button" href="{{ route('registration') }}">Register</a>
+                        </div>
                     </form>
                 </div>
             </div>

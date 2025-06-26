@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Kreait\Firebase\Factory;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function testAddUser(Request $request)
+    public function userStore(Request $request)
     {
-        $data = request()->all();
-        $name = request()->name;
-        $email = request()->email;
-        $password = request()->password;
-        $role = request()->role;
-        $database = $factory->createDatabase();
-        $usersRef = $database->getReference('users');
-        $newUser = [
-            'name' => $name,
-            'email' => $email,
-            'password' => $password, 
-            'role' => $role ?? 'User',
-        ];
-        $usersRef->push($newUser);
-        return redirect()->route('photos.manage_users')->with('success', 'User added successfully!');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = new User();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->password = Hash::make($validated['password']);
+        $user->role = $request->role ?? 'User';
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'User registered successfully!');
     }
     public function showRegistrationForm()
     {

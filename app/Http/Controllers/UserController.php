@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        // Return the users index view
+        return view('users.index');
+    }
+
     public function userStore(Request $request)
     {
         $validated = $request->validate([
@@ -25,12 +31,16 @@ class UserController extends Controller
 
         return redirect()->route('login')->with('success', 'User registered successfully!');
     }
+
     public function showRegistrationForm()
     {
-        return view('users.registration');
+        // Return the user registration view
+        return view('users.create');
     }
+
     public function showEditForm()
     {
+        // Return the user edit form view
         return view('users.edit');
     }
 }

@@ -27,6 +27,12 @@
         <button id="recommendationButton" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
             ✨ Discover New Books
         </button>
+        <a href="{{ route('books.create') }}" class="ml-4 mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
+            + Add New Book
+        </a>
+        <a href="{{ route('categories.create') }}" class="ml-4 mt-8 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
+            + Add New Category
+        </a>
     </header>
 
     <!-- Recommendation Section -->
@@ -49,53 +55,60 @@
             <label for="categoryFilter" class="sr-only">Filter by Category</label>
             <select id="categoryFilter" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-lg">
                 <option value="all">All Categories</option>
-                <option value="fantasy">Fantasy</option>
-                <option value="mystery">Mystery</option>
-                <option value="programming">Programming</option>
-                <option value="history">History</option>
-                <!-- Add more categories as needed -->
+                @foreach($categories as $category)
+                    <option value="{{ strtolower(is_array($category) ? $category['name'] : $category->name) }}">{{ is_array($category) ? $category['name'] : $category->name }}</option>
+                @endforeach
             </select>
         </div>
     </section>
 
     <main id="bookList" class="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <!-- Example Book Card 1 -->
-        <a href="show.blade.php?book_id=1" class="book-card bg-white rounded-xl shadow-lg hover:shadow-xl overflow-hidden cursor-pointer p-4 flex flex-col items-center text-center" data-category="fantasy" data-title="The Great Adventure" data-price="19.99">
-            <img src="https://placehold.co/150x200/90EE90/000000?text=Book+Cover+1" alt="Book Cover" class="rounded-lg mb-4 w-3/4 h-auto object-cover">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">The Great Adventure</h3>
-            <p class="text-gray-600 text-sm">Author: Jane Doe</p>
-            <p class="text-gray-500 text-xs mt-1">Genre: Fantasy</p>
-            <p class="text-green-600 font-bold mt-2">$19.99</p>
-        </a>
-
-        <!-- Example Book Card 2 -->
-        <a href="show.blade.php?book_id=2" class="book-card bg-white rounded-xl shadow-lg hover:shadow-xl overflow-hidden cursor-pointer p-4 flex flex-col items-center text-center" data-category="mystery" data-title="Mystery of the Old House" data-price="15.50">
-            <img src="https://placehold.co/150x200/ADD8E6/000000?text=Book+Cover+2" alt="Book Cover" class="rounded-lg mb-4 w-3/4 h-auto object-cover">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Mystery of the Old House</h3>
-            <p class="text-gray-600 text-sm">Author: John Smith</p>
-            <p class="text-gray-500 text-xs mt-1">Genre: Mystery</p>
-            <p class="text-green-600 font-bold mt-2">$15.50</p>
-        </a>
-
-        <!-- Example Book Card 3 -->
-        <a href="show.blade.php?book_id=3" class="book-card bg-white rounded-xl shadow-lg hover:shadow-xl overflow-hidden cursor-pointer p-4 flex flex-col items-center text-center" data-category="programming" data-title="Coding with Joy" data-price="29.99">
-            <img src="https://placehold.co/150x200/FFD700/000000?text=Book+Cover+3" alt="Book Cover" class="rounded-lg mb-4 w-3/4 h-auto object-cover">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Coding with Joy</h3>
-            <p class="text-gray-600 text-sm">Author: Alice Tech</p>
-            <p class="text-gray-500 text-xs mt-1">Genre: Programming</p>
-            <p class="text-green-600 font-bold mt-2">$29.99</p>
-        </a>
-
-        <!-- Example Book Card 4 -->
-        <a href="show.blade.php?book_id=4" class="book-card bg-white rounded-xl shadow-lg hover:shadow-xl overflow-hidden cursor-pointer p-4 flex flex-col items-center text-center" data-category="history" data-title="Historical Echoes" data-price="22.75">
-            <img src="https://placehold.co/150x200/F08080/000000?text=Book+Cover+4" alt="Book Cover" class="rounded-lg mb-4 w-3/4 h-auto object-cover">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Historical Echoes</h3>
-            <p class="text-gray-600 text-sm">Author: Robert History</p>
-            <p class="text-gray-500 text-xs mt-1">Genre: History</p>
-            <p class="text-green-600 font-bold mt-2">$22.75</p>
-        </a>
-
-        <!-- Add more book cards as needed -->
+        @foreach($books as $book)
+            <a href="{{ route('books.show', $book->id) }}" class="book-card bg-white rounded-xl shadow-lg hover:shadow-xl overflow-hidden cursor-pointer flex flex-col items-center text-center p-4 h-full"
+                data-category="{{ strtolower(is_array($book->category ?? null) ? $book->category['name'] ?? '' : ($book->category->name ?? '')) }}"
+                data-title="{{ $book->title }}"
+                data-price="{{ $book->price ?? '' }}">
+                <div class="flex flex-col items-center justify-between h-full w-full">
+                    <div class="w-full flex flex-col items-center">
+                        @php
+                            $coverUrl = '';
+                            if (is_object($book) && isset($book->image) && !empty($book->image)) {
+                                $coverUrl = $book->image;
+                            } elseif (is_array($book) && isset($book['image']) && !empty($book['image'])) {
+                                $coverUrl = $book['image'];
+                            } else {
+                                $title = is_object($book) ? $book->title : (is_array($book) ? $book['title'] : '');
+                                $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . urlencode($title) . '-L.jpg';
+                            }
+                        @endphp
+                        <img src="{{ $coverUrl }}" alt="Book Cover" class="rounded-lg mb-4 w-32 h-48 object-cover mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/150x200/cccccc/000000?text=No+Image';">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">{{ $book->title }}</h3>
+                        <div class="flex flex-row w-full justify-between mb-1">
+                            <span class="text-gray-500 text-xs font-medium">Author:</span>
+                            <span class="text-gray-600 text-sm">{{ $book->author }}</span>
+                        </div>
+                        <div class="flex flex-row w-full justify-between mb-1">
+                            <span class="text-gray-500 text-xs font-medium">Genre:</span>
+                            <span class="text-gray-500 text-xs">{{ $book->category->name ?? 'N/A' }}</span>
+                        </div>
+                        <div class="flex flex-row w-full justify-between mb-1">
+                            <span class="text-gray-500 text-xs font-medium">Published:</span>
+                            <span class="text-gray-500 text-xs">{{ $book->published_at }}</span>
+                        </div>
+                        @if(isset($book->price))
+                        <div class="flex flex-row w-full justify-between mb-1">
+                            <span class="text-gray-500 text-xs font-medium">Price:</span>
+                            <span class="text-green-600 font-bold">${{ $book->price }}</span>
+                        </div>
+                        @endif
+                        <div class="w-full mt-2">
+                            <span class="text-gray-500 text-xs font-medium">Description:</span>
+                            <p class="text-gray-700 text-xs mt-1">{{ $book->description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        @endforeach
     </main>
 
     <footer class="w-full max-w-7xl mt-12 text-center text-gray-600">

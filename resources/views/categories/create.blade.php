@@ -24,20 +24,23 @@
     </header>
 
     <main class="w-full max-w-xl bg-white rounded-xl form-card p-8">
-        <form action="#" method="POST" class="space-y-6">
+        <form action="{{ route('categories.store') }}" method="POST" class="space-y-6">
+            @csrf
             <div>
-                <label for="category_name" class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input type="text" name="category_name" id="category_name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., Science Fiction" required>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+                <input type="text" name="name" id="name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., Science Fiction" required>
             </div>
-            <div class="flex justify-end space-x-4">
-                <a href="index.php" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Cancel
-                </a>
+            <div class="flex justify-end">
                 <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Create Category
                 </button>
             </div>
         </form>
+        <div class="flex justify-end mt-2">
+            <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Cancel
+            </a>
+        </div>
     </main>
 
     <footer class="w-full max-w-xl mt-8 text-center text-gray-600">

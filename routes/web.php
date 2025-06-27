@@ -37,7 +37,7 @@ Route::get('/users-creation', [UserController::class, 'showRegistrationForm'])->
 Route::get('/users/update', [UserController::class, 'showEditForm'])->name('edit');
 
 
-Route::middleware(['auth'])->group(function () {
+//Route::middleware(['auth'])->group(function () {
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-});
+//});

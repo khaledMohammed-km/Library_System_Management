@@ -9,8 +9,8 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        // Return the categories index view
-        return view('categories.index');
+        $categories = Category::all();
+        return view('categories.index', compact('categories'));
     }
 
     public function create()
@@ -35,6 +35,8 @@ class CategoryController extends Controller
             'name' => $request->name,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Category created successfully!');
+        return redirect()->route('books.index')->with('success', 'Category created successfully!');
     }
+
+    
 }

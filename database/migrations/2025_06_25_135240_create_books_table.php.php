@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('author');
+            $table->integer('published_at'); // Only year
             $table->text('description');
-            $table->text('image');
+            $table->string('image')->nullable(); // Will store image URL
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

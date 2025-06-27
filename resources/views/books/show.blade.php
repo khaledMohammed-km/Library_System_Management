@@ -25,23 +25,43 @@
 
     <main class="w-full max-w-4xl bg-white rounded-xl detail-card p-8 flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
         <div class="flex-shrink-0">
-            <img src="https://placehold.co/250x350/90EE90/000000?text=Book+Cover" alt="Book Cover" class="rounded-lg w-full md:w-auto h-auto object-cover">
+            @php
+                $coverUrl = '';
+                $title = '';
+                if (is_object($book)) {
+                    $title = isset($book->title) ? $book->title : '';
+                    $coverUrl = isset($book->image) && !empty($book->image) ? $book->image : '';
+                } elseif (is_array($book)) {
+                    $title = isset($book['title']) ? $book['title'] : '';
+                    $coverUrl = isset($book['image']) && !empty($book['image']) ? $book['image'] : '';
+                }
+                if (empty($coverUrl)) {
+                    $coverUrl = 'https://covers.openlibrary.org/b/isbn/' . urlencode($title) . '-L.jpg';
+                }
+            @endphp
+            <img src="{{ $coverUrl }}" alt="Book Cover" class="rounded-lg w-full md:w-64 h-auto object-cover mb-4" onerror="this.onerror=null;this.src='https://placehold.co/250x350/cccccc/000000?text=No+Image';">
         </div>
         <div class="flex-grow text-center md:text-left">
-            <h2 class="text-3xl font-extrabold text-gray-800 mb-3">The Great Adventure</h2>
-            <p class="text-xl text-gray-600 mb-2"><strong>Author:</strong> Jane Doe</p>
-            <p class="text-lg text-gray-600 mb-2"><strong>Genre:</strong> Fantasy</p>
-            <p class="text-lg text-gray-600 mb-2"><strong>Published:</strong> 2023</p>
-            <p class="text-lg text-gray-600 mb-4"><strong>Price:</strong> $19.99</p>
-            <div class="prose text-gray-700 leading-relaxed max-w-none">
-                <p>This epic tale follows the journey of a young hero through mystical lands filled with ancient magic and formidable creatures. Join them as they uncover long-lost secrets, forge powerful alliances, and confront a looming darkness that threatens to engulf their world.</p>
-                <p>A true masterpiece of fantasy literature, this book will transport you to a realm where imagination knows no bounds. Perfect for readers who love intricate world-building, compelling characters, and a thrilling plot.</p>
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-3">{{ $book->title }}</h2>
+            <div class="flex flex-col space-y-2 mb-4">
+                <div><span class="font-semibold">Author:</span> {{ $book->author }}</div>
+                <div><span class="font-semibold">Genre:</span> {{ $book->category->name ?? 'N/A' }}</div>
+                <div><span class="font-semibold">Published:</span> {{ $book->published_at }}</div>
+                @if(isset($book->price))
+                <div><span class="font-semibold">Price:</span> ${{ $book->price }}</div>
+                @endif
+            </div>
+            <div class="prose text-gray-700 leading-relaxed max-w-none mb-6">
+                <p>{{ $book->description }}</p>
             </div>
             <div class="mt-6 flex justify-center md:justify-start space-x-4">
                 <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Borrow Book
+                    Purchase / Command
                 </button>
-                <a href="index.blade.php" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                <a href="{{ route('books.edit', $book->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Edit
+                </a>
+                <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Back to Books
                 </a>
             </div>

@@ -70,7 +70,7 @@
                     <label for="password">Password</label>
                 </div>
                 <div class="d-grid mb-3">
-                    <button class="btn btn-library btn-login text-uppercase fw-bold" type="submit">
+                    <button class="btn btn-library btn-login text-uppercase fw-bold w-100" type="submit">
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </button>
                 </div>

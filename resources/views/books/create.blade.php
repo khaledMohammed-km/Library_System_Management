@@ -24,35 +24,41 @@
     </header>
 
     <main class="w-full max-w-2xl bg-white rounded-xl form-card p-8">
-        <form action="#" method="POST" class="space-y-6">
+        <form action="{{ route('books.store') }}" method="POST" class="space-y-6">
+            @csrf
             <div>
-                <label for="new_title" class="block text-sm font-medium text-gray-700 mb-1">Book Title</label>
-                <input type="text" name="new_title" id="new_title" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., The Midnight Library" required>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Book Title</label>
+                <input type="text" name="title" id="title" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., The Midnight Library" required>
             </div>
             <div>
-                <label for="new_author" class="block text-sm font-medium text-gray-700 mb-1">Author</label>
-                <input type="text" name="new_author" id="new_author" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., Matt Haig" required>
+                <label for="author" class="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                <input type="text" name="author" id="author" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., Matt Haig" required>
             </div>
             <div>
-                <label for="new_genre" class="block text-sm font-medium text-gray-700 mb-1">Genre</label>
-                <input type="text" name="new_genre" id="new_genre" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., Contemporary Fiction">
+                <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select name="category_id" id="category_id" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" required>
+                    <option value="">Select a category</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div>
-                <label for="new_published_year" class="block text-sm font-medium text-gray-700 mb-1">Published Year</label>
-                <input type="number" name="new_published_year" id="new_published_year" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., 2020">
+                <label for="published_at" class="block text-sm font-medium text-gray-700 mb-1">Published Year</label>
+                <input type="number" name="published_at" id="published_at" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., 2020" min="1000" max="9999" required>
             </div>
             <div>
-                <label for="new_price" class="block text-sm font-medium text-gray-700 mb-1">Book Price</label>
-                <input type="number" name="new_price" id="new_price" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., 25.99" step="0.01">
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Book Image URL</label>
+                <input type="url" name="image" id="image" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="e.g., https://example.com/image.jpg">
             </div>
             <div>
-                <label for="new_description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="new_description" id="new_description" rows="5" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="Enter a brief description of the book..."></textarea>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea name="description" id="description" rows="5" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 sm:text-sm" placeholder="Enter a brief description of the book..." required></textarea>
             </div>
             <div class="flex justify-end space-x-4">
-                <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Cancel
-                </button>
+                </a>
                 <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Add Book
                 </button>

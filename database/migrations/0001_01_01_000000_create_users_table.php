@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('role')->default('User'); // Default role set to 'User'
+            $table->string('role')->default('User'); 
             $table->rememberToken();
             $table->timestamps();
         });

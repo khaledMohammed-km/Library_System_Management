@@ -42,30 +42,66 @@
             <img src="{{ $coverUrl }}" alt="Book Cover" class="rounded-lg w-full md:w-64 h-auto object-cover mb-4" onerror="this.onerror=null;this.src='https://placehold.co/250x350/cccccc/000000?text=No+Image';">
         </div>
         <div class="flex-grow text-center md:text-left">
-            <h2 class="text-3xl font-extrabold text-gray-800 mb-3">{{ $book->title }}</h2>
-            <div class="flex flex-col space-y-2 mb-4">
-                <div><span class="font-semibold">Author:</span> {{ $book->author }}</div>
-                <div><span class="font-semibold">Genre:</span> {{ $book->category->name ?? 'N/A' }}</div>
-                <div><span class="font-semibold">Published:</span> {{ $book->published_at }}</div>
-                @if(isset($book->price))
-                <div><span class="font-semibold">Price:</span> ${{ $book->price }}</div>
-                @endif
+            @php
+                // Ensure $book is an Eloquent model and has loaded relations
+                $bookTitle = $book->title ?? '';
+                $bookAuthor = $book->author ?? '';
+                $bookCategory = ($book->category && isset($book->category->name)) ? $book->category->name : 'N/A';
+                $bookPublished = $book->published_at ?? '';
+                $bookPrice = $book->price ?? null;
+                $bookDescription = $book->description ?? '';
+            @endphp
+
+        <h2 class="text-3xl font-extrabold text-gray-800 mb-3">{{ $bookTitle }}</h2>
+
+        <div class="flex flex-col space-y-2 mb-4">
+            {{-- Author --}}
+            <div class="flex items-center">
+                <span class="font-semibold mr-2">Author:</span>
+                <span>{{ $bookAuthor }}</span>
             </div>
-            <div class="prose text-gray-700 leading-relaxed max-w-none mb-6">
-                <p>{{ $book->description }}</p>
+            {{-- Genre --}}
+            <div class="flex items-center">
+                <span class="font-semibold mr-2">Genre:</span>
+                <span>{{ $bookCategory }}</span>
             </div>
-            <div class="mt-6 flex justify-center md:justify-start space-x-4">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Purchase / Command
-                </button>
-                <a href="{{ route('books.edit', $book->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Edit
-                </a>
-                <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Back to Books
-                </a>
+            {{-- Published --}}
+            <div class="flex items-center">
+                <span class="font-semibold mr-2">Published:</span>
+                <span>{{ $bookPublished }}</span>
             </div>
+            {{-- Price (only if set) --}}
+            @if($bookPrice)
+            <div class="flex items-center">
+                <span class="font-semibold mr-2">Price:</span>
+                <span class="text-green-600 font-bold">${{ number_format($bookPrice, 2) }}</span>
+            </div>
+            @endif
         </div>
+
+        {{-- Description --}}
+        @if(!empty($bookDescription))
+        <div class="prose text-gray-700 leading-relaxed max-w-none mb-6">
+            <span class="font-semibold">Description:</span>
+            <p class="mt-1">{{ $bookDescription }}</p>
+        </div>
+        @endif
+
+        <div class="mt-6 flex justify-center md:justify-start space-x-4">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Purchase / Command
+            </button>
+            @php
+                $editId = $book->id ?? null;
+            @endphp
+            <a href="{{ $editId ? route('books.edit', $editId) : '#' }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Edit
+            </a>
+            <a href="{{ route('books.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Back to Books
+            </a>
+        </div>
+    </div>
     </main>
 
     <footer class="w-full max-w-4xl mt-8 text-center text-gray-600">

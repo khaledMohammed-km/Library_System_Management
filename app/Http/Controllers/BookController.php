@@ -74,12 +74,11 @@ class BookController
 
 
     // Display the specified resource.
-    public function show($book)
+    public function show(Book $book) 
     {
-        // Return the show book view
+        $book->load('category'); 
         return view('books.show', compact('book'));
     }
-
     //test dashboard view
     public function booksDashboard()
     {

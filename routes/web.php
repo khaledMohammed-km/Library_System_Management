@@ -41,7 +41,8 @@ Route::get('/users/update', [UserController::class, 'showEditForm'])->name('edit
 Route::middleware(['auth'])->group(function () {
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/add/{book}', [CartController::class, 'add'])->name('cart.add'); 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::delete('/cart/remove/{cart}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });

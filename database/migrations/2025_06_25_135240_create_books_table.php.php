@@ -14,9 +14,13 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('author');
+            $table->integer('published_at'); // Only year
             $table->text('description');
-            $table->text('image');
+            $table->string('image')->nullable(); 
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->decimal('price', 8, 2)->nullable(); 
+            $table->integer('stock')->default(0); 
             $table->timestamps();
         });
     }

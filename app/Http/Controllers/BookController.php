@@ -9,10 +9,13 @@ use App\Models\Book;
 use App\Models\Category;
 use App\Services\BookService;
 use App\Services\CategoryService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class BookController
 {
+    use AuthorizesRequests;
+
     /*protected CategoryService $categoryService;
     protected BookService $bookService;
 
@@ -44,6 +47,9 @@ class BookController
     // Show the form for creating a new resource.
     public function create()
     {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+             abort(403, 'This action is unauthorized.');
+        }
         $categories = Category::all();
         return view('books.create', compact('categories'));
     }
@@ -51,13 +57,18 @@ class BookController
     //Store a newly created resource in storage.
     public function store(Request $request)
     {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403, 'This action is unauthorized.');
+        }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'published_at' => 'required|integer|min:1000|max:9999',
             'description' => 'required|string|max:500',
-            'image' => 'nullable|url',
+            'image' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer|min:0',
         ]);
 
         Book::create([
@@ -65,8 +76,12 @@ class BookController
             'author' => $validated['author'],
             'published_at' => $validated['published_at'],
             'description' => $validated['description'],
-            'image' => $validated['image'] ?? null,
+            'image' => $validated['image'],
             'category_id' => $validated['category_id'],
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return redirect()->route('books.index')->with('success', 'Book created successfully');
@@ -88,25 +103,42 @@ class BookController
     }
 
     //Show the form for editing the specified resource.
-    public function edit($book)
+    public function edit(Book $book)
     {
-        // Return the edit book view
-        return view('books.edit', compact('book'));
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403, 'This action is unauthorized.');
+        }
+        $categories = Category::all();
+        return view('books.edit', compact('book', 'categories'));
     }
 
     //Update the specified resource in storage.
-    public function update(UpdateBookRequest $request, Book $book)
+    public function update(Request $request, Book $book)
     {
-        $this->bookService->update($book, $request->validated());
-
-        return redirect()->route('books.index')->with('success', 'Book updated successfully');
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403, 'This action is unauthorized.');
+        }
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'published_at' => 'required|integer|min:1000|max:9999',
+            'description' => 'required|string|max:500',
+            'image' => 'nullable|url',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'nullable|numeric',
+            'stock' => 'required|integer|min:0',
+        ]);
+        $book->update($validated);
+        return redirect()->route('books.show', $book->id)->with('success', 'Book updated successfully');
     }
 
      //Remove the specified resource from storage.
     public function destroy(Book $book)
     {
-        $this->bookService->delete($book);
-
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403, 'This action is unauthorized.');
+        }
+        $book->delete();
         return redirect()->route('books.index')->with('success', 'Book deleted successfully');
     }
 }

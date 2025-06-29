@@ -21,18 +21,47 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
-    <header class="w-full max-w-7xl mb-12 text-center">
+    <header class="w-full max-w-7xl mb-12 text-center relative flex flex-col items-center">
+        <div class="absolute left-0 top-0 mt-2 ml-2 flex items-center space-x-2 z-10">
+            <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-200 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </span>
+            <span class="text-gray-700 font-semibold">Welcome, {{ auth()->user()->name }}</span>
+        </div>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="absolute left-0 top-0 mt-14 ml-2">
+            @csrf
+            <button type="submit" class="flex items-center bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-full transition duration-200 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                </svg>
+                Logout
+            </button>
+        </form>
         <h1 class="text-5xl font-extrabold text-gray-900 leading-tight mb-4">Welcome to Our Digital Library</h1>
         <p class="text-xl text-gray-700">Explore our collection of available books below.</p>
-        <button id="recommendationButton" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
-            ✨ Discover New Books
-        </button>
-        <a href="{{ route('books.create') }}" class="ml-4 mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
-            + Add New Book
+        <a href="{{ route('cart.index') }}" class="absolute right-0 top-0 flex items-center bg-gray-200 hover:bg-gray-300 rounded-full px-4 py-2 transition duration-200 shadow-md z-20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7A1 1 0 007.5 17h9a1 1 0 00.85-1.53L17 13M7 13V6a1 1 0 011-1h5a1 1 0 011 1v7" />
+            </svg>
+            <span class="font-semibold text-gray-700">My Cart</span>
         </a>
-        <a href="{{ route('categories.create') }}" class="ml-4 mt-8 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
-            + Add New Category
-        </a>
+        <div class="flex flex-row justify-center items-center gap-4 mt-8">
+            <button id="recommendationButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                ✨ Discover New Books
+            </button>
+            @auth
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('books.create') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
+                        + Add New Book
+                    </a>
+                    <a href="{{ route('categories.create') }}" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg inline-block">
+                        + Add New Category
+                    </a>
+                @endif
+            @endauth
+        </div>
     </header>
 
     <!-- Recommendation Section -->
@@ -101,6 +130,10 @@
                             <span class="text-green-600 font-bold">${{ $book->price }}</span>
                         </div>
                         @endif
+                        <div class="flex flex-row w-full justify-between mb-1">
+                            <span class="text-gray-500 text-xs font-medium">Available in Stock:</span>
+                            <span class="text-blue-700 font-bold">{{ $book->stock ?? 0 }}</span>
+                        </div>
                         <div class="w-full mt-2">
                             <span class="text-gray-500 text-xs font-medium">Description:</span>
                             <p class="text-gray-700 text-xs mt-1">{{ $book->description }}</p>
@@ -108,6 +141,18 @@
                     </div>
                 </div>
             </a>
+            @auth
+                @can('update', $book)
+                    <a href="{{ route('books.edit', $book) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm">Edit</a>
+                @endcan
+                @can('delete', $book)
+                    <form action="{{ route('books.destroy', $book) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this book?');" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">Delete</button>
+                    </form>
+                @endcan
+            @endauth
         @endforeach
     </main>
 

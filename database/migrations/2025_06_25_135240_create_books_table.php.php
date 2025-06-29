@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('author');
             $table->integer('published_at'); // Only year
             $table->text('description');
-            $table->string('image')->nullable(); // Will store image URL
+            $table->string('image')->nullable(); 
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->decimal('price', 8, 2)->nullable(); 
+            $table->integer('stock')->default(0); 
             $table->timestamps();
         });
     }
